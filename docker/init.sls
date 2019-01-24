@@ -48,9 +48,15 @@ purge old packages:
 
 docker package repository:
   pkgrepo.managed:
+{%- if grains["oscodename"]|lower == 'jessie' and "version" not in docker%}
     - name: deb https://apt.dockerproject.org/repo {{ grains["os"]|lower }}-{{ grains["oscodename"] }} main
     - humanname: {{ grains["os"] }} {{ grains["oscodename"]|capitalize }} Docker Package Repository
     - keyid: 58118E89F3A912897C070ADBF76221572C52609D
+{%- else %}
+    - name: deb https://download.docker.com/linux/{{ grains["os"]|lower }} {{ grains["oscodename"] }} stable
+    - humanname: {{ grains["os"] }} {{ grains["oscodename"]|capitalize }} Docker Package Repository
+    - keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+{%- endif %}
 {%- endif %}
     - keyserver: hkp://p80.pool.sks-keyservers.net:80
     - file: /etc/apt/sources.list.d/docker.list
@@ -69,6 +75,9 @@ docker package:
     - version: {{ docker.version }}
     {%- elif use_old_repo %}
     - name: lxc-docker-{{ docker.version }}
+    {%- elif grains["oscodename"]|lower == 'stretch' %}
+    - name: docker-ce
+    - version: {{ docker.version }}
     {%- else %}
     - name: docker-engine
     - version: {{ docker.version }}
@@ -78,6 +87,8 @@ docker package:
   pkg.latest:
     {%- if grains["oscodename"]|lower == 'jessie' and "version" not in docker %}
     - name: docker.io
+    {%- elif grains["oscodename"]|lower == 'stretch' %}
+    - name: docker-ce
     {%- else %}
     - name: docker-engine
     {%- endif %}
