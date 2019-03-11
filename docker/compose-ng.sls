@@ -25,7 +25,7 @@
   {%- endif %}
   {%- if 'environment' in container and container.environment is iterable %}
     - environment:
-    {%- for variable, value in container.environment.iteritems() %}
+    {%- for variable, value in container.environment.items() %}
         - {{variable}}: {{value}}
     {%- endfor %}
   {%- endif %}
